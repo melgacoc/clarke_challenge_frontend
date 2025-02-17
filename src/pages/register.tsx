@@ -35,7 +35,7 @@ export default function Register() {
                             token: data.token,
                             user_id : data.user.id,
                         }));
-                        window.location.href = '/dashboard';
+                        window.location.href = `/dashboard/${activeTab}`;
                     }
                 })
                 .catch(err => {

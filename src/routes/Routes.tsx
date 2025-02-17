@@ -7,7 +7,7 @@ const Routes = () => {
     return (
         <Router>
             <ReactRoutes>
-                <Route path="/auth" element={<Auth />} />
+                <Route path="/" element={<Auth />} />
                 <Route path="/dashboard/user" element={<UserDashboard />} />
                 <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
             </ReactRoutes>

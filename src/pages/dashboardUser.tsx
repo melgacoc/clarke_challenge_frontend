@@ -17,7 +17,7 @@ type Contract = {
 };
 
 type AuthToken = {
-  id: string;
+  user_id: string;
   email: string;
   name: string;
   role: string;
@@ -31,7 +31,7 @@ export default function UserDashboard() {
   const [page, setPage] = useState(1);
 
   const authToken = localStorage.getItem("authToken");
-  const userId = authToken ? (JSON.parse(authToken) as AuthToken).id : "";
+  const userId = authToken ? (JSON.parse(authToken) as AuthToken).user_id : "";
 
   const { data: suppliersData, refetch: refetchSuppliers } = useQuery(GET_SUPPLIERS, {
     variables: { 
