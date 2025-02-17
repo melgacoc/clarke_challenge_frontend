@@ -57,6 +57,15 @@ query getSupplierById($id: Int!) {
 }
 `;
 
+export const GET_REVIEW = gql`
+query {
+  getReview(user_id: "user_id_value", supplier_id: "supplier_id_value") {
+    id
+    rating
+  }
+}
+`;
+
 export const GET_ALL_CONTRACTS = gql`
   query {
     getAllContracts {
@@ -230,4 +239,17 @@ export const DEACTIVATE_CONTRACT = gql`
       created_at
     }
   }
+`;
+
+export const CREATE_REVIEW = gql`
+mutation createReview($createReviewInput: CreateReviewInput!) {
+  createReview(createReviewInput: $createReviewInput) {
+    id
+    user_id
+    supplier_id
+    rating
+    createdAt
+    updatedAt
+  }
+}
 `;
