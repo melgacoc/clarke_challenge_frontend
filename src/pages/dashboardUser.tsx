@@ -5,13 +5,11 @@ import {
   GET_CONTRACTS_BY_USER_ID,
   CREATE_CONTRACT,
   DEACTIVATE_CONTRACT,
-  GET_REVIEW,
   CREATE_REVIEW,
 } from "../services/queries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaStar } from "react-icons/fa";
-import { formateDate } from "@/utils/functions";
 
 type Supplier = {
   id: string;
@@ -48,7 +46,6 @@ export default function UserDashboard() {
   const authToken = localStorage.getItem("authToken");
   const userId = authToken ? (JSON.parse(authToken) as AuthToken).id : "";
 
-  const [getReview] = useLazyQuery(GET_REVIEW);
   const [createReview] = useMutation(CREATE_REVIEW);
 
   const { data: suppliersData, refetch: refetchSuppliers } = useQuery(
