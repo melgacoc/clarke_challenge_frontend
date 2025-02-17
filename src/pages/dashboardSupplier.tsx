@@ -4,12 +4,33 @@ import { GET_SUPPLIER_DETAILS, UPDATE_SUPPLIER, GET_CONTRACTS_BY_SUPPLIER_ID } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+type Supplier = {
+  logo: string;
+  name: string;
+  email: string;
+  state_origin: string;
+  cost_per_kWh: number;
+  min_kWh_limit: number;
+  total_clients: number;
+  avg_rating: number;
+};
+
+type Contract = {
+  user_id: string;
+  created_at: string | number | Date;
+  cost_per_kWh: number;
+  isActive: any;
+  id: string;
+  supplier_name: string;
+  user_kWh_month: number;
+};
+
 export default function SupplierDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [costPerKwh, setCostPerKwh] = useState("");
   const [minKwhLimit, setMinKwhLimit] = useState("");
   const [totalClients, setTotalClients] = useState("");
-  const [supplier, setSupplier] = useState(null);
+  const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [page, setPage] = useState(1);
   const [limit] = useState(12);
 
@@ -94,7 +115,7 @@ export default function SupplierDashboard() {
           </Button>
           <h2 className="text-xl font-bold mt-4">Contracts</h2>
           <ul>
-            {contractsData?.getAllContractsBySupplierId.map((contract) => (
+            {contractsData?.getAllContractsBySupplierId.map((contract: Contract) => (
               <li key={contract.id} className="mb-2">
                 <p><strong>Client ID:</strong> {contract.user_id}</p>
                 <p><strong>Start Date:</strong> {new Date(contract.created_at).toLocaleDateString()}</p>

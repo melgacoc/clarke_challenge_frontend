@@ -4,13 +4,34 @@ import { GET_SUPPLIERS, GET_CONTRACTS_BY_USER_ID, CREATE_CONTRACT, DEACTIVATE_CO
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+type Supplier = {
+  id: string;
+  name: string;
+  min_kWh_limit: number;
+};
+
+type Contract = {
+  id: string;
+  supplier_name: string;
+  user_kWh_month: number;
+};
+
+type AuthToken = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  token: string;
+};
+
 export default function UserDashboard() {
   const [kwh, setKwh] = useState("");
-  const [filteredSuppliers, setFilteredSuppliers] = useState([]);
-  const [contract, setContract] = useState(null);
+  const [filteredSuppliers, setFilteredSuppliers] = useState<Supplier[]>([]);
+  const [contract, setContract] = useState<Contract | null>(null);
   const [page, setPage] = useState(1);
 
-  const userId = JSON.parse(localStorage.getItem("authToken") || "{}").id;
+  const authToken = localStorage.getItem("authToken");
+  const userId = authToken ? (JSON.parse(authToken) as AuthToken).id : "";
 
   const { data: suppliersData, refetch: refetchSuppliers } = useQuery(GET_SUPPLIERS, {
     variables: { 

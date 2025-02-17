@@ -43,6 +43,7 @@ export default function Register() {
                 });
         } else {
             setErrors(validationResults);
+            console.log(errors);
         }
     };
 
