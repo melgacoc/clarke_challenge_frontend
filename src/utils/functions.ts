@@ -1,19 +1,5 @@
 import moment from "moment";
 
-export function formatCurrencyBRL(value: string): string {
-    const numericValue = value.replace(/\D/g, "");
-    const formattedValue = (Number(numericValue) / 100).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-    });
-    return formattedValue;
-}
-
-export function parseCurrencyBRL(value: string): number {
-    const numericValue = value.replace(/[^\d,-]/g, "").replace(",", ".");
-    return parseFloat(numericValue);
-}
-
 export function formatCPF(value: string): string {
     const numericValue = value.replace(/\D/g, "").slice(0, 11);
     return numericValue
@@ -35,14 +21,5 @@ export const formateDateToTimestamp = (data: Date | null): number => {
     const date = moment(data, "DD/MM/YYYY").toDate();
     return date.getTime();
 }
-
-export const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(amount);
-  };
 
 

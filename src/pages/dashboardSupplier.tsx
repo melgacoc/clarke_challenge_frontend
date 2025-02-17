@@ -17,6 +17,7 @@ type Supplier = {
 
 type Contract = {
   user_id: string;
+  user_name: string;
   created_at: string | number | Date;
   cost_per_kWh: number;
   isActive: any;
@@ -30,11 +31,14 @@ export default function SupplierDashboard() {
   const [costPerKwh, setCostPerKwh] = useState("");
   const [minKwhLimit, setMinKwhLimit] = useState("");
   const [totalClients, setTotalClients] = useState("");
+  const [stateOrigin, setStateOrigin] = useState("");
+  const [logo, setLogo] = useState("");
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [page, setPage] = useState(1);
   const [limit] = useState(12);
 
-  const supplierId = JSON.parse(localStorage.getItem("authToken") || "{}").id;
+  const authToken = localStorage.getItem("authToken");
+  const supplierId = authToken ? JSON.parse(authToken).user_id : null;
 
   const { data: supplierData, refetch: refetchSupplier } = useQuery(GET_SUPPLIER_DETAILS, {
     variables: { id: supplierId },
@@ -56,20 +60,25 @@ export default function SupplierDashboard() {
 
   useEffect(() => {
     if (supplierData && supplierData.getSupplierById) {
-      setSupplier(supplierData.getSupplierById);
-      setCostPerKwh(supplierData.getSupplierById.cost_per_kWh);
-      setMinKwhLimit(supplierData.getSupplierById.min_kWh_limit);
-      setTotalClients(supplierData.getSupplierById.total_clients);
+      const supplier = supplierData.getSupplierById;
+      setSupplier(supplier);
+      setCostPerKwh(supplier.cost_per_kWh ? supplier.cost_per_kWh.toString() : '');
+      setMinKwhLimit(supplier.min_kWh_limit ? supplier.min_kWh_limit.toString() : '');
+      setTotalClients(supplier.total_clients ? supplier.total_clients.toString() : '');
+      setStateOrigin(supplier.state_origin ? supplier.state_origin : '');
+      setLogo(supplier.logo ? supplier.logo : '');
     }
   }, [supplierData]);
 
   const handleUpdateSupplier = () => {
     const variables = {
-      supplier_id: supplierId,
+      id: supplierId,
       input: {
         cost_per_kWh: parseFloat(costPerKwh),
         min_kWh_limit: parseFloat(minKwhLimit),
         total_clients: parseInt(totalClients, 10),
+        state_origin: stateOrigin,
+        logo,
       },
     };
     updateSupplier({ variables });
@@ -86,52 +95,71 @@ export default function SupplierDashboard() {
   const handleLogout = () => {
     if (confirm("Você tem certeza que deseja sair?")) {
       localStorage.clear();
-      window.location.href = "/auth";
+      window.location.href = "/";
     }
   };
 
   if (!supplier) return <div>Loading...</div>;
 
+  const hasContracts = contractsData?.getAllContractsBySupplierId?.length > 0;
+
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <header className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Supplier Dashboard</h1>
+        <h1 className="text-2xl font-bold">Dashboard do Fornecedor</h1>
         <Button onClick={handleLogout} className="bg-red-600 text-white">
           Logout
         </Button>
       </header>
       {!isEditing ? (
-        <div>
-          <img src={supplier.logo} alt={`${supplier.name} logo`} className="mb-4" />
-          <p><strong>Name:</strong> {supplier.name}</p>
-          <p><strong>Email:</strong> {supplier.email}</p>
-          <p><strong>State Origin:</strong> {supplier.state_origin}</p>
-          <p><strong>Cost per kWh:</strong> {supplier.cost_per_kWh}</p>
-          <p><strong>Min kWh Limit:</strong> {supplier.min_kWh_limit}</p>
-          <p><strong>Total Clients:</strong> {supplier.total_clients}</p>
-          <p><strong>Average Rating:</strong> {supplier.avg_rating}</p>
-          <Button onClick={() => setIsEditing(true)} className="bg-blue-600 text-white mt-2">
-            Editar
-          </Button>
-          <h2 className="text-xl font-bold mt-4">Contracts</h2>
-          <ul>
-            {contractsData?.getAllContractsBySupplierId.map((contract: Contract) => (
-              <li key={contract.id} className="mb-2">
-                <p><strong>Client ID:</strong> {contract.user_id}</p>
-                <p><strong>Start Date:</strong> {new Date(contract.created_at).toLocaleDateString()}</p>
-                <p><strong>Cost per kWh:</strong> {contract.cost_per_kWh}</p>
-                <p><strong>kWh per Month:</strong> {contract.user_kWh_month}</p>
-                <p><strong>Active:</strong> {contract.isActive ? "Yes" : "No"}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="flex justify-between mt-4">
-            <Button onClick={handlePreviousPage} disabled={page === 1} className="bg-gray-600 text-white">
-              Página Anterior
+        <div className="space-y-4">
+          <div className="border p-6 rounded-lg shadow-md bg-white">
+            <img src={supplier.logo} alt={`${supplier.name} logo`} className="mb-4" />
+            <p><strong>Nome:</strong> {supplier.name}</p>
+            <p><strong>Email:</strong> {supplier.email}</p>
+            <p><strong>Estado:</strong> {supplier.state_origin}</p>
+            <p><strong>Valor do kWh:</strong> {supplier.cost_per_kWh}</p>
+            <p><strong>Min kWh Limit:</strong> {supplier.min_kWh_limit}</p>
+            <p><strong>Total Clientes:</strong> {supplier.total_clients}</p>
+            <p><strong>Avaliação:</strong> {supplier.avg_rating}</p>
+            <Button onClick={() => setIsEditing(true)} className="bg-blue-600 text-white mt-2">
+              Editar
             </Button>
-            <Button onClick={handleNextPage} disabled={contractsData?.getAllContractsBySupplierId.length < 12} className="bg-gray-600 text-white">
-              Próxima Página
-            </Button>
+          </div>
+
+          <div className="border p-6 rounded-lg shadow-md bg-white">
+            <h2 className="text-xl font-bold mb-4">Contratos</h2>
+            {hasContracts ? (
+              <ul>
+                {contractsData?.getAllContractsBySupplierId?.map((contract: Contract) => (
+                  <li key={contract.id} className="mb-4">
+                    <div className="border p-4 rounded-md shadow-sm bg-gray-50">
+                      <p><strong>Cliente:</strong> {contract.user_name}</p>
+                      <p><strong>Data ínicio:</strong> {new Date(contract.created_at).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}</p>
+                      <p><strong>Valor do kWh:</strong> {contract.cost_per_kWh}</p>
+                      <p><strong>kWh por mês:</strong> {contract.user_kWh_month}</p>
+                      <p><strong>Plano ativo?:</strong> {contract.isActive ? "Sim" : "Não"}</p>
+                    </div>
+                  </li>
+                ))} 
+              </ul>
+            ) : (
+              <p className="text-gray-500">Não há contratos para exibir.</p>
+            )}
+            {hasContracts && (
+              <div className="flex justify-between mt-4">
+                <Button onClick={handlePreviousPage} disabled={page === 1} className="bg-gray-600 text-white">
+                  Página Anterior
+                </Button>
+                <Button onClick={handleNextPage} disabled={contractsData?.getAllContractsBySupplierId?.length < 12} className="bg-gray-600 text-white">
+                  Próxima Página
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -161,6 +189,24 @@ export default function SupplierDashboard() {
               placeholder="Total Clients"
               value={totalClients}
               onChange={(e) => setTotalClients(e.target.value)}
+            />
+          </label>
+          <label className="block mb-2">
+            Estado
+            <Input
+              type="text"
+              placeholder="Estado de Origem"
+              value={stateOrigin}
+              onChange={(e) => setStateOrigin(e.target.value)}
+            />
+          </label>
+          <label className="block mb-2">
+            Logo
+            <Input
+              type="text"
+              placeholder="Logo"
+              value={logo}
+              onChange={(e) => setLogo(e.target.value)}
             />
           </label>
           <Button onClick={handleUpdateSupplier} className="bg-green-600 text-white mt-2">

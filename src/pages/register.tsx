@@ -20,22 +20,39 @@ export default function Register() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const validationResults = validateForm(name, email, password, cpf);
-
+        let validationResults;
+        if (activeTab === 'user') {
+            validationResults = validateForm(name, email, password, cpf);
+        } else {
+            validationResults = validateForm(name, email, password, 'supplier');
+        }
+        console.log(activeTab);
         if (Object.values(validationResults).every(isValid => isValid)) {
             const mutation = activeTab === 'user' ? createUser : createSupplier;
             const variables = activeTab === 'user' 
             ? { input: { name, email, password, cpf }} 
-            : { input: { name, email, password }};
+            : { input: { name, email, password, }};
             mutation({ variables })
                 .then(response => {
-                    const data = activeTab === 'user' ? response.data.createUser : response.data.createSupplier;
-                    if (data) {
-                        localStorage.setItem('authToken', JSON.stringify({
-                            token: data.token,
-                            user_id : data.user.id,
-                        }));
-                        window.location.href = `/dashboard/${activeTab}`;
+                    console.log(response);
+                    if(activeTab === 'user') {
+                        const data = response.data.createUser;
+                        if (data) {
+                            localStorage.setItem('authToken', JSON.stringify({
+                                token: data.token,
+                                user_id : data.id,
+                            }));
+                            window.location.href = `/dashboard/${activeTab}`;
+                        }
+                    } else {
+                        const data = response.data.createSupplier;
+                        if (data) {
+                            localStorage.setItem('authToken', JSON.stringify({
+                                token: data.token,
+                                user_id : data.supplier.id,
+                            }));
+                            window.location.href = `/dashboard/${activeTab}`;
+                        }
                     }
                 })
                 .catch(err => {
