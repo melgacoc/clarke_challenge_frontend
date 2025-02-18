@@ -75,4 +75,4 @@ O usuário pode criar uma nova conta fornecendo nome, email, senha e CPF. Assegu
 Deploy
 ------------
 
-Acesse o projeto diretamente pelo [link de deploy](https://woovibank.netlify.app/). Por se tratar de um deploy free a primeira requisição após o sistema estar inativo demora em torno de 50s para acontecer.
+Acesse o projeto diretamente pelo [link de deploy](https://clarkechallengeclaudio.netlify.app/). Por se tratar de um deploy free a primeira requisição após o sistema estar inativo demora em torno de 50s para acontecer.
