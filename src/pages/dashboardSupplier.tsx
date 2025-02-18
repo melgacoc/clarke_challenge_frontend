@@ -165,7 +165,7 @@ export default function SupplierDashboard() {
       ) : (
         <div>
           <label className="block mb-2">
-            Cost per kWh
+            Custo por kWh
             <Input
               type="number"
               placeholder="Cost per kWh"
@@ -174,7 +174,7 @@ export default function SupplierDashboard() {
             />
           </label>
           <label className="block mb-2">
-            Min kWh Limit
+            Minimo kWh
             <Input
               type="number"
               placeholder="Min kWh Limit"
@@ -183,7 +183,7 @@ export default function SupplierDashboard() {
             />
           </label>
           <label className="block mb-2">
-            Total Clients
+            Total de clientes
             <Input
               type="number"
               placeholder="Total Clients"
